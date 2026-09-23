@@ -1,0 +1,554 @@
+{
+	"info": {
+		"_postman_id": "c71e8461-1254-47c4-a633-87a17726debf",
+		"name": "EY Technical Test - Screening & Supplier API",
+		"description": "Colección completa de Postman para la prueba técnica EY.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Autenticación",
+			"item": [
+				{
+					"name": "Login (Obtener JWT Token)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.token) {",
+									"    pm.environment.set(\"jwt_token\", jsonData.token);",
+									"    pm.collectionVariables.set(\"jwt_token\", jsonData.token);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"admin\",\n  \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "2. Gestión de Proveedores (Ejercicio 2)",
+			"item": [
+				{
+					"name": "Listar Proveedores (Ordenados por Última Edición)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/suppliers",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"suppliers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Proveedor por ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/suppliers/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"suppliers",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Crear Proveedor",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"legalName\": \"BANCO INTERNACIONAL DEL PERU S.A.A.\",\n  \"tradeName\": \"INTERBANK\",\n  \"taxId\": \"20100053455\",\n  \"phoneNumber\": \"+51 1 311-9000\",\n  \"email\": \"contacto@interbank.pe\",\n  \"website\": \"https://www.interbank.pe\",\n  \"physicalAddress\": \"Av. Carlos Villaran 140, La Victoria, Lima\",\n  \"country\": \"Perú\",\n  \"annualRevenue\": 1250000000.00,\n  \"representatives\": [\n    {\n      \"forename\": \"Luis\",\n      \"familyName\": \"Torres\",\n      \"email\": \"ltorres@interbank.pe\",\n      \"documentNumber\": \"45678901\"\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/suppliers",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"suppliers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar Proveedor",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"legalName\": \"ALICORP S.A.A.\",\n  \"tradeName\": \"ALICORP CENTRAL\",\n  \"taxId\": \"20100055237\",\n  \"phoneNumber\": \"+51 1 315-0800\",\n  \"email\": \"compliance@alicorp.com.pe\",\n  \"website\": \"https://www.alicorp.com.pe\",\n  \"physicalAddress\": \"Av. Argentina 4793, Callao, Lima - Sede Central\",\n  \"country\": \"Perú\",\n  \"annualRevenue\": 3800000000.00,\n  \"representatives\": [\n    {\n      \"forename\": \"Alfredo\",\n      \"familyName\": \"Perez\",\n      \"email\": \"aperez@alicorp.com.pe\",\n      \"documentNumber\": \"09876543\"\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/suppliers/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"suppliers",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cruce de Proveedor con Listas de Alto Riesgo",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"sources\": [\n    \"SMV\",\n    \"SECOP\"\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/suppliers/3/screening",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"suppliers",
+								"3",
+								"screening"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar Proveedor",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/suppliers/2",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"suppliers",
+								"2"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "3. SECOP I (Colombia)",
+			"item": [
+				{
+					"name": "SECOP I - Búsqueda por Entidad o Contratista (POST)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"entityName\": \"CONSORCIO\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/screening/secop",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"screening",
+								"secop"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SECOP I - Búsqueda (GET Query Param)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/screening/secop?entityName=GOBERNACION",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"screening",
+								"secop"
+							],
+							"query": [
+								{
+									"key": "entityName",
+									"value": "GOBERNACION"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "4. SMV (Perú)",
+			"item": [
+				{
+					"name": "SMV - Consulta de Sanciones (POST)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"entityName\": \"MINERA\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/screening/smv",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"screening",
+								"smv"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SMV - Consulta de Sanciones (GET Query Param)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/screening/smv?entityName=CREDICORP",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"screening",
+								"smv"
+							],
+							"query": [
+								{
+									"key": "entityName",
+									"value": "CREDICORP"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "5. Interpol (Red Notices)",
+			"item": [
+				{
+					"name": "Interpol - Búsqueda por Apellido/Nombre (POST)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"familyName\": \"GARCIA\",\n  \"forename\": \"\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/screening/interpol",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"screening",
+								"interpol"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Interpol - Búsqueda con Filtros (GET)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/screening/interpol?familyName=LOPEZ&nationality=ES",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"screening",
+								"interpol"
+							],
+							"query": [
+								{
+									"key": "familyName",
+									"value": "LOPEZ"
+								},
+								{
+									"key": "nationality",
+									"value": "ES"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "6. Screening Consolidado (1 a 3 Fuentes)",
+			"item": [
+				{
+					"name": "MultiScreening - SMV y SECOP I en Paralelo",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"entityName\": \"CONSORCIO\",\n  \"sources\": [\n    \"SMV\",\n    \"SECOP\"\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/screening/check",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"screening",
+								"check"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:5261"
+		},
+		{
+			"key": "jwt_token",
+			"value": ""
+		}
+	]
+}
