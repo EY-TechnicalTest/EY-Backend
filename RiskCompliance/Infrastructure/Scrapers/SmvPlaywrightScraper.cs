@@ -159,7 +159,7 @@ public class SmvPlaywrightScraper : ISmvScraper
                 HasAppeal = "No",
                 ResolutiveNumber = "-",
                 ResolutiveDate = "-",
-                ResolutionUrl = "https://www.smv.gob.pe/ConsultasP8/temp/RESOLUCION%20045-2021.pdf"
+                ResolutionUrl = "/resoluciones/RESOLUCION_045_2021_SMV.pdf"
             });
 
             result.Sanctions.Add(new SmvSanction
@@ -172,7 +172,7 @@ public class SmvPlaywrightScraper : ISmvScraper
                 HasAppeal = "Sí",
                 ResolutiveNumber = "Res. 088-2023-SMV/02",
                 ResolutiveDate = "10/08/2023",
-                ResolutionUrl = "https://www.smv.gob.pe/ConsultasP8/temp/RESOLUCION%20012-2023.pdf"
+                ResolutionUrl = "/resoluciones/RESOLUCION_012_2023_SMV.pdf"
             });
         }
 

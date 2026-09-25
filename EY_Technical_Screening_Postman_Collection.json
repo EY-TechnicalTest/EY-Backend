@@ -2,7 +2,7 @@
 	"info": {
 		"_postman_id": "c71e8461-1254-47c4-a633-87a17726debf",
 		"name": "EY Technical Test - Screening & Supplier API",
-		"description": "Colección completa de Postman para la prueba técnica EY.",
+		"description": "Colección completa de Postman para la evaluación técnica de Ernst & Young (EY).\n\nIncluye:\n1. Autenticación con JWT Bearer Token.\n2. CRUD completo de Proveedores (Suppliers y LegalRepresentatives).\n3. Screening automatizado por ID de Proveedor (SMV, SECOP, INTERPOL).\n4. Consultas directas a fuentes de alto riesgo: SMV (Perú), SECOP I (Colombia) e INTERPOL (Red Notices).\n5. Verificación de Rate Limiting (20 req/min -> HTTP 429).\n\nPor defecto 'baseUrl' apunta al entorno en la nube de Azure para ejecución inmediata sin necesidad de levantar el backend local.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -20,6 +20,7 @@
 									"if (jsonData.token) {",
 									"    pm.environment.set(\"jwt_token\", jsonData.token);",
 									"    pm.collectionVariables.set(\"jwt_token\", jsonData.token);",
+									"    console.log(\"JWT Token guardado exitosamente:\", jsonData.token);",
 									"}"
 								],
 								"type": "text/javascript"
@@ -36,7 +37,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"username\": \"admin\",\n  \"password\": \"password123\"\n}"
+							"raw": "{\n  \"username\": \"admin\",\n  \"password\": \"admin123\"\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/auth/login",
@@ -48,14 +49,15 @@
 								"auth",
 								"login"
 							]
-						}
+						},
+						"description": "Inicia sesión con credenciales de auditor/compliance. Guarda automáticamente el token JWT en la variable {{jwt_token}} para todas las peticiones posteriores."
 					},
 					"response": []
 				}
 			]
 		},
 		{
-			"name": "2. Gestión de Proveedores (Ejercicio 2)",
+			"name": "2. Gestión de Proveedores (CRUD - Ejercicio 2)",
 			"item": [
 				{
 					"name": "Listar Proveedores (Ordenados por Última Edición)",
@@ -81,7 +83,8 @@
 								"api",
 								"suppliers"
 							]
-						}
+						},
+						"description": "Obtiene todos los proveedores registrados en la base de datos junto con sus representantes legales, ordenados de forma descendente por LastEditedAt."
 					},
 					"response": []
 				},
@@ -110,7 +113,8 @@
 								"suppliers",
 								"1"
 							]
-						}
+						},
+						"description": "Obtiene la ficha técnica completa del proveedor con ID 1 (ej. ALICORP S.A.A.)."
 					},
 					"response": []
 				},
@@ -147,7 +151,8 @@
 								"api",
 								"suppliers"
 							]
-						}
+						},
+						"description": "Registra un nuevo proveedor validando TaxId de 11 dígitos, correo, URL web, facturación y representantes legales."
 					},
 					"response": []
 				},
@@ -185,12 +190,13 @@
 								"suppliers",
 								"1"
 							]
-						}
+						},
+						"description": "Actualiza los datos del proveedor y actualiza automáticamente la marca de tiempo LastEditedAt."
 					},
 					"response": []
 				},
 				{
-					"name": "Cruce de Proveedor con Listas de Alto Riesgo",
+					"name": "Cruce de Proveedor con Listas de Alto Riesgo (Screening por ID)",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -211,20 +217,21 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"sources\": [\n    \"SMV\",\n    \"SECOP\"\n  ]\n}"
+							"raw": "{\n  \"sources\": [\n    \"SMV\",\n    \"SECOP\",\n    \"INTERPOL\"\n  ]\n}"
 						},
 						"url": {
-							"raw": "{{baseUrl}}/api/suppliers/3/screening",
+							"raw": "{{baseUrl}}/api/suppliers/1/screening",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"api",
 								"suppliers",
-								"3",
+								"1",
 								"screening"
 							]
-						}
+						},
+						"description": "Ejecuta el cruce automático de debida diligencia para el proveedor con ID 1 en las fuentes seleccionadas (mínimo 1, máximo 3)."
 					},
 					"response": []
 				},
@@ -253,14 +260,15 @@
 								"suppliers",
 								"2"
 							]
-						}
+						},
+						"description": "Elimina el proveedor y sus representantes legales por borrado en cascada."
 					},
 					"response": []
 				}
 			]
 		},
 		{
-			"name": "3. SECOP I (Colombia)",
+			"name": "3. SECOP I (Colombia - Sanciones Estatales)",
 			"item": [
 				{
 					"name": "SECOP I - Búsqueda por Entidad o Contratista (POST)",
@@ -296,7 +304,8 @@
 								"screening",
 								"secop"
 							]
-						}
+						},
+						"description": "Consulta sanciones en datos.gov.co para contratistas o entidades que coincidan con el término indicado."
 					},
 					"response": []
 				},
@@ -331,14 +340,15 @@
 									"value": "GOBERNACION"
 								}
 							]
-						}
+						},
+						"description": "Búsqueda en SECOP I mediante query parameter GET."
 					},
 					"response": []
 				}
 			]
 		},
 		{
-			"name": "4. SMV (Perú)",
+			"name": "4. SMV (Perú - Mercado de Valores)",
 			"item": [
 				{
 					"name": "SMV - Consulta de Sanciones (POST)",
@@ -362,7 +372,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"entityName\": \"MINERA\"\n}"
+							"raw": "{\n  \"entityName\": \"CREDICORP\"\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/screening/smv",
@@ -374,7 +384,8 @@
 								"screening",
 								"smv"
 							]
-						}
+						},
+						"description": "Consulta el Registro de Sanciones de la SMV de Perú para la entidad indicada."
 					},
 					"response": []
 				},
@@ -394,7 +405,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/api/screening/smv?entityName=CREDICORP",
+							"raw": "{{baseUrl}}/api/screening/smv?entityName=ALICORP",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -406,10 +417,11 @@
 							"query": [
 								{
 									"key": "entityName",
-									"value": "CREDICORP"
+									"value": "ALICORP"
 								}
 							]
-						}
+						},
+						"description": "Consulta de sanciones en SMV mediante query param GET."
 					},
 					"response": []
 				}
@@ -419,7 +431,7 @@
 			"name": "5. Interpol (Red Notices)",
 			"item": [
 				{
-					"name": "Interpol - Búsqueda por Apellido/Nombre (POST)",
+					"name": "Interpol - Búsqueda por Apellido y Nombre (POST)",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -440,7 +452,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"familyName\": \"GARCIA\",\n  \"forename\": \"\"\n}"
+							"raw": "{\n  \"familyName\": \"Rosado\",\n  \"forename\": \"Katherine\"\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/screening/interpol",
@@ -452,7 +464,8 @@
 								"screening",
 								"interpol"
 							]
-						}
+						},
+						"description": "Consulta la base oficial de Notificaciones Rojas de INTERPOL por nombre y apellido."
 					},
 					"response": []
 				},
@@ -472,7 +485,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/api/screening/interpol?familyName=LOPEZ&nationality=ES",
+							"raw": "{{baseUrl}}/api/screening/interpol?familyName=GARCIA&nationality=PE",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -484,24 +497,25 @@
 							"query": [
 								{
 									"key": "familyName",
-									"value": "LOPEZ"
+									"value": "GARCIA"
 								},
 								{
 									"key": "nationality",
-									"value": "ES"
+									"value": "PE"
 								}
 							]
-						}
+						},
+						"description": "Consulta en Interpol mediante query parameters GET."
 					},
 					"response": []
 				}
 			]
 		},
 		{
-			"name": "6. Screening Consolidado (1 a 3 Fuentes)",
+			"name": "6. Screening Multifuente Consolidado (1 a 3 Fuentes)",
 			"item": [
 				{
-					"name": "MultiScreening - SMV y SECOP I en Paralelo",
+					"name": "MultiScreening - SMV, SECOP I e INTERPOL (POST)",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -522,7 +536,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"entityName\": \"CONSORCIO\",\n  \"sources\": [\n    \"SMV\",\n    \"SECOP\"\n  ]\n}"
+							"raw": "{\n  \"entityName\": \"CONSORCIO MINERO DEL SUR\",\n  \"representativeName\": \"Carlos Mendoza\",\n  \"sources\": [\n    \"SMV\",\n    \"SECOP\",\n    \"INTERPOL\"\n  ]\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/screening/check",
@@ -534,7 +548,42 @@
 								"screening",
 								"check"
 							]
-						}
+						},
+						"description": "Cruce bajo demanda sin requerir que la entidad esté previamente en la base de datos, consultando de 1 a 3 fuentes en paralelo."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "7. Seguridad & Rate Limiting (20 llamadas/minuto)",
+			"item": [
+				{
+					"name": "Verificar Rate Limiting (HTTP 429)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/suppliers",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"suppliers"
+							]
+						},
+						"description": "Para probar el Rate Limiting: Ejecuta esta petición (o la colección) repetidamente. Al superar 20 llamadas en una ventana de 60 segundos desde la misma IP, el servidor devolverá HTTP 429 Too Many Requests con el mensaje explicativo."
 					},
 					"response": []
 				}
@@ -544,11 +593,15 @@
 	"variable": [
 		{
 			"key": "baseUrl",
-			"value": "http://localhost:5261"
+			"value": "https://ey-backend-fabiola-ceb2cafgcxcxg0eh.canadacentral-01.azurewebsites.net",
+			"type": "string",
+			"description": "URL base de la API. Apunta por defecto a Azure. Cambiar a 'http://localhost:5000' si se ejecuta localmente."
 		},
 		{
 			"key": "jwt_token",
-			"value": ""
+			"value": "",
+			"type": "string",
+			"description": "Token JWT generado automáticamente al ejecutar la petición Login."
 		}
 	]
 }

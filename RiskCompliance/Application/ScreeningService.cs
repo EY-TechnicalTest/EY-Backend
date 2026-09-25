@@ -163,8 +163,28 @@ public class ScreeningService : IScreeningService
                         : request.EntityName.Trim();
 
                     var parts = personNameToSearch.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-                    var family = parts.Length > 1 ? string.Join(" ", parts.Skip(1)) : parts[0];
-                    var fore = parts.Length > 1 ? parts[0] : string.Empty;
+                    string fore;
+                    string family;
+                    if (parts.Length >= 4)
+                    {
+                        fore = $"{parts[0]} {parts[1]}";
+                        family = string.Join(" ", parts.Skip(2));
+                    }
+                    else if (parts.Length == 3)
+                    {
+                        fore = parts[0];
+                        family = $"{parts[1]} {parts[2]}";
+                    }
+                    else if (parts.Length == 2)
+                    {
+                        fore = parts[0];
+                        family = parts[1];
+                    }
+                    else
+                    {
+                        fore = string.Empty;
+                        family = parts.Length > 0 ? parts[0] : string.Empty;
+                    }
 
                     var criteria = new InterpolSearchCriteria
                     {

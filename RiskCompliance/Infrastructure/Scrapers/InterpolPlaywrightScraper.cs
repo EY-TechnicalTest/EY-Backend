@@ -184,33 +184,9 @@ public class InterpolPlaywrightScraper : IInterpolScraper
 
     private static (List<InterpolPerson> Persons, int TotalHits) GetOfficialCloudFallback(InterpolSearchCriteria criteria)
     {
+        // En entornos sin soporte gráfico de Playwright (como Azure App Service Linux),
+        // se retorna lista vacía limpia sin inventar ni forzar nombres de personas.
         var persons = new List<InterpolPerson>();
-
-        var familyUpper = (criteria.FamilyName ?? string.Empty).ToUpperInvariant();
-        var foreUpper = (criteria.Forename ?? string.Empty).ToUpperInvariant();
-
-        // Si se busca un representante o persona con apellidos con registros (ej. Gomez, Perez, Mendoza, etc.)
-        if (!string.IsNullOrWhiteSpace(familyUpper) || !string.IsNullOrWhiteSpace(foreUpper))
-        {
-            if (familyUpper.Contains("GOMEZ") || familyUpper.Contains("PEREZ") || familyUpper.Contains("MENDOZA") ||
-                familyUpper.Contains("RODRIGUEZ") || familyUpper.Contains("SANCHEZ") || familyUpper.Contains("LOPEZ") ||
-                familyUpper.Contains("HERNANDEZ") || familyUpper.Contains("CORONA") || familyUpper.Contains("DEL SUR") ||
-                familyUpper.Contains("CONSORCIO"))
-            {
-                persons.Add(new InterpolPerson
-                {
-                    FamilyName = string.IsNullOrWhiteSpace(familyUpper) ? "GOMEZ" : familyUpper,
-                    Forename = string.IsNullOrWhiteSpace(foreUpper) ? "EDUARDO" : foreUpper,
-                    Nationality = "Peruana",
-                    Gender = "Male",
-                    Age = 45,
-                    WantedBy = "Perú - Poder Judicial / Corte Superior Nacional",
-                    Charges = "Delito contra la administración pública en la modalidad de colusión agravada y cohecho activo genérico.",
-                    DetailUrl = "https://www.interpol.int/How-we-work/Notices/Red-Notices/View-Red-Notices"
-                });
-            }
-        }
-
-        return (persons, persons.Count);
+        return (persons, 0);
     }
 }
