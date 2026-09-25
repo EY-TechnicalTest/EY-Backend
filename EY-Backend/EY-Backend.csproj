@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>EY_Backend</RootNamespace>
+    <UserSecretsId>197f69d1-50d6-4cce-aeb6-175f3481d283</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

@@ -18,15 +18,15 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
-// 2. CORS Policy
+// 2. CORS Policy (Soporta localhost y dominios de despliegue en Azure / Cloud)
 var corsOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
-    ?? new[] { "http://localhost:5173", "http://localhost:3000", "http://localhost:4200" };
+    ?? new[] { "http://localhost:5173", "http://localhost:3000", "http://localhost:4200", "http://127.0.0.1:5173" };
 
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("Frontend", policy =>
     {
-        policy.WithOrigins(corsOrigins)
+        policy.SetIsOriginAllowed(origin => true) // Permite conectar desde el frontend desplegado o local
               .AllowAnyMethod()
               .AllowAnyHeader()
               .AllowCredentials();

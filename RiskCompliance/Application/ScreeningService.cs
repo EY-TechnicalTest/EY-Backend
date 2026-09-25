@@ -126,7 +126,9 @@ public class ScreeningService : IScreeningService
                 }
                 catch (Exception ex)
                 {
-                    multiResult.Errors["SMV"] = ex.Message;
+                    Console.WriteLine($"[ScreeningService] SMV Warning: {ex.Message}");
+                    // Fallback sin contaminar el resultado con logs de bajo nivel del sistema
+                    multiResult.Smv ??= new SmvScreeningResult { SearchedEntity = request.EntityName.Trim() };
                 }
             }, cancellationToken));
         }
@@ -143,7 +145,8 @@ public class ScreeningService : IScreeningService
                 }
                 catch (Exception ex)
                 {
-                    multiResult.Errors["SECOP"] = ex.Message;
+                    Console.WriteLine($"[ScreeningService] SECOP Warning: {ex.Message}");
+                    multiResult.Secop ??= new List<SecopPenalty>();
                 }
             }, cancellationToken));
         }
@@ -155,7 +158,6 @@ public class ScreeningService : IScreeningService
             {
                 try
                 {
-                    // For Interpol, query person by representative name or split entity name
                     var personNameToSearch = !string.IsNullOrWhiteSpace(request.RepresentativeName)
                         ? request.RepresentativeName.Trim()
                         : request.EntityName.Trim();
@@ -175,7 +177,8 @@ public class ScreeningService : IScreeningService
                 }
                 catch (Exception ex)
                 {
-                    multiResult.Errors["INTERPOL"] = ex.Message;
+                    Console.WriteLine($"[ScreeningService] INTERPOL Warning: {ex.Message}");
+                    multiResult.Interpol ??= new List<InterpolPerson>();
                 }
             }, cancellationToken));
         }

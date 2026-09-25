@@ -4,10 +4,7 @@ namespace RiskCompliance.Infrastructure.Scrapers;
 
 public static class PlaywrightBrowserHelper
 {
-    private static bool _driverInstalled = false;
-    private static readonly object _lock = new();
-
-    public static async Task<IBrowser> LaunchResilientBrowserAsync(IPlaywright playwright, bool headless = true)
+    public static async Task<IBrowser?> LaunchResilientBrowserAsync(IPlaywright playwright, bool headless = true)
     {
         var launchOptions = new BrowserTypeLaunchOptions
         {
@@ -15,6 +12,7 @@ public static class PlaywrightBrowserHelper
             Args = new[]
             {
                 "--disable-blink-features=AutomationControlled",
+                "--headless=new",
                 "--no-sandbox",
                 "--disable-setuid-sandbox",
                 "--disable-dev-shm-usage"
@@ -25,8 +23,11 @@ public static class PlaywrightBrowserHelper
         {
             return await playwright.Chromium.LaunchAsync(launchOptions);
         }
-        catch (PlaywrightException)
+        catch (Exception ex)
         {
+            Console.WriteLine($"[PlaywrightBrowserHelper] Default launch failed: {ex.Message}");
+
+            // Intentar con Google Chrome instalado
             try
             {
                 var chromeOptions = new BrowserTypeLaunchOptions
@@ -37,8 +38,9 @@ public static class PlaywrightBrowserHelper
                 };
                 return await playwright.Chromium.LaunchAsync(chromeOptions);
             }
-            catch (PlaywrightException)
+            catch
             {
+                // Intentar con Microsoft Edge instalado
                 try
                 {
                     var edgeOptions = new BrowserTypeLaunchOptions
@@ -51,15 +53,9 @@ public static class PlaywrightBrowserHelper
                 }
                 catch
                 {
-                    lock (_lock)
-                    {
-                        if (!_driverInstalled)
-                        {
-                            Microsoft.Playwright.Program.Main(new[] { "install", "chromium" });
-                            _driverInstalled = true;
-                        }
-                    }
-                    return await playwright.Chromium.LaunchAsync(launchOptions);
+                    // Si nos encontramos en un contenedor Linux sin librerías gráficas (ej. Azure App Service Linux)
+                    Console.WriteLine("[PlaywrightBrowserHelper] Entorno sin soporte de librerías gráficas Linux (ej. libatk). Activando modo resiliente.");
+                    return null;
                 }
             }
         }
