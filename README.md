@@ -1,6 +1,6 @@
 # EY Backend - Supplier Management & Risk Screening API
 
-Backend en **.NET 8 (C#)** diseñado con **Clean Architecture** para la gestión de proveedores corporativos y la ejecución de procesos de debida diligencia (*screening*) en listas de riesgo (SMV Perú, SECOP I Colombia e INTERPOL).
+Backend en **.NET 8 (C#)** diseñado con **Clean Architecture** para la gestión de proveedores corporativos y la ejecución de procesos de debida diligencia (*screening*) en listas de riesgo (SMV, SECOP e INTERPOL).
 
 ---
 
